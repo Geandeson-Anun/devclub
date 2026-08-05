@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useVideoInView } from "@/hooks/use-video-in-view";
+import Image from "next/image"
 
 const COMMUNITY_AVATARS = ["JS", "AL", "RC", "MP"];
 
@@ -39,7 +40,10 @@ export function Footer() {
   return (
     <footer className="relative">
       {/* Final CTA block */}
-      <section className="relative overflow-hidden bg-[#0D0F14] px-6 py-24 sm:py-32">
+      <section
+        id="matricula"
+        className="relative overflow-hidden bg-[#0D0F14] px-6 py-24 sm:py-32"
+      >
         {/* Background video — lazy-loaded (below the fold), CTA block only */}
         <video
           ref={videoRef}
@@ -91,7 +95,9 @@ export function Footer() {
           </p>
 
           <motion.a
-            href="#formacoes"
+            href="https://api.whatsapp.com/send/?phone=5516990482444&text=quero%20me%20matricular&type=phone_number&app_absent=0"
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.98 }}
             animate={{
@@ -108,7 +114,7 @@ export function Footer() {
             }}
             className="mt-9 inline-flex items-center gap-2 rounded-lg bg-brand px-8 py-4 text-base font-semibold text-brand-foreground"
           >
-            Ver Formações
+            Matricule-se agora
             <ArrowRight className="h-5 w-5" />
           </motion.a>
 
@@ -140,7 +146,9 @@ export function Footer() {
               <span className="font-semibold text-foreground">
                 +10 mil alunos
               </span>{" "}
-               <span style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>em todo o Brasil</span>
+              <span style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
+                em todo o Brasil
+              </span>
             </p>
           </div>
         </motion.div>
@@ -153,9 +161,13 @@ export function Footer() {
             {/* Column 1 — brand */}
             <div>
               <a href="#topo" className="inline-flex items-center gap-2">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand/15 text-brand ring-1 ring-brand/25">
-                  <Terminal className="h-5 w-5" />
-                </span>
+                <Image
+                  src="/images/logo.png"
+                  alt="DevClub"
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 rounded-lg"
+                />
                 <span className="text-lg font-semibold tracking-tight text-foreground">
                   DevClub
                 </span>
