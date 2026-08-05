@@ -102,7 +102,7 @@ export function AboutSection() {
             >
             <div className="relative aspect-[4/5] w-[180px] overflow-hidden rounded-[calc(1.5rem-2px)] sm:w-[210px]">
               <Image
-                src="/images/rodolfo.png"
+                src="/images/rodolfo.jpg"
                 alt="Rodolfo Mori, fundador do DevClub"
                 fill
                 sizes="(min-width: 640px) 210px, 180px"

@@ -21,7 +21,7 @@ const TUTORS: Tutor[] = [
   {
     name: "Andrey",
     initials: "AN",
-    image: "/images/andrey.png",
+    image: "/images/andrey.jpg",
     role: "Acompanhamento e Suporte",
     description: "Garante que você nunca fique travado: suporte contínuo em cada dúvida da sua jornada.",
     icon: Headset,
@@ -31,7 +31,7 @@ const TUTORS: Tutor[] = [
   {
     name: "Fernanda",
     initials: "FE",
-    image: "/images/fernanda.png",
+    image: "/images/fernanda.jpg",
     role: "Recrutamento & LinkedIn",
     description:
       "Especialista em recrutamento, ensina a criar o currículo e o LinkedIn que chamam atenção das empresas.",
@@ -42,7 +42,7 @@ const TUTORS: Tutor[] = [
   {
     name: "Ronald",
     initials: "RO",
-    image: "/images/ronald.png",
+    image: "/images/ronald.jpg",
     role: "Desenvolvimento de SaaS",
     description: "Ensina como sair do projeto de portfólio para construir produtos SaaS reais.",
     icon: Code2,
@@ -52,7 +52,7 @@ const TUTORS: Tutor[] = [
   {
     name: "Márcio",
     initials: "MA",
-    image: "/images/marcio.png",
+    image: "/images/marcio.jpg",
     role: "Mentalidade & Terapia",
     description: "Trabalha a mentalidade do aluno, ajudando a vencer bloqueios e manter a consistência nos estudos.",
     icon: HeartPulse,
@@ -62,7 +62,7 @@ const TUTORS: Tutor[] = [
   {
     name: "Adriano",
     initials: "AD",
-    image: "/images/adriano.png",
+    image: "/images/adriano.jpg",
     role: "Vendas de Sites & Freelas",
     description: "Ensina técnicas de vendas para quem quer faturar com sites, serviços e projetos freelance.",
     icon: TrendingUp,
@@ -72,7 +72,7 @@ const TUTORS: Tutor[] = [
   {
     name: "Gabriel",
     initials: "GA",
-    image: "/images/gabriel.png",
+    image: "/images/gabriel.jpg",
     role: "Agentes de IA",
     description:
       "Especialista em desenvolvimento de agentes de IA, preparando você para a próxima fronteira da programação.",
