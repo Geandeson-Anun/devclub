@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import Image from "next/image"
 import { motion, type Variants } from "framer-motion"
 import { Code2, Briefcase, Rocket, User } from "lucide-react"
+import { useVideoInView } from "@/hooks/use-video-in-view"
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -40,12 +41,7 @@ const COMMUNITY_AVATARS = ["AS", "CO", "MS"]
 
 export function AboutSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.muted = true
-    v.play().catch((err) => console.log("autoplay bloqueado:", err))
-  }, [])
+  useVideoInView(videoRef)
 
   return (
     <section id="quem-somos" className="relative overflow-hidden bg-[#0D0F14] px-6 py-24 sm:py-32">

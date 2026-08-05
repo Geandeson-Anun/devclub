@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Terminal,
@@ -11,6 +11,7 @@ import {
   MessageCircle,
   ArrowRight,
 } from "lucide-react";
+import { useVideoInView } from "@/hooks/use-video-in-view";
 
 const COMMUNITY_AVATARS = ["JS", "AL", "RC", "MP"];
 
@@ -33,12 +34,7 @@ export function Footer() {
   const [email, setEmail] = useState("");
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = true;
-    v.play().catch((err) => console.log("autoplay bloqueado:", err));
-  }, []);
+  useVideoInView(videoRef);
 
   return (
     <footer className="relative">

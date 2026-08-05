@@ -4,6 +4,7 @@ import type React from "react"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion, useMotionValue, useSpring, useTransform, type Transition } from "framer-motion"
 import { Star } from "lucide-react"
+import { useVideoInView } from "@/hooks/use-video-in-view"
 
 // ---- código digitado, token a token (cor por tipo) ----
 type Token = { text: string; className?: string }
@@ -405,13 +406,8 @@ export function Hero({ onSequenceComplete }: { onSequenceComplete?: () => void }
   const [entryOffset, setEntryOffset] = useState<Offset>({ x: 0, y: 0 })
   const [stage, setStage] = useState<RevealStage>("idle")
 
-   const videoRef = useRef<HTMLVideoElement>(null)
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.muted = true
-    v.play().catch((err) => console.log("autoplay bloqueado:", err))
-  }, [])
+  const videoRef = useRef<HTMLVideoElement>(null)
+  useVideoInView(videoRef)
 
   // Mede, em tempo real, a distância entre o centro da seção (a "tela") e o
   // centro do lugar final do notebook (coluna da direita) para que ele possa

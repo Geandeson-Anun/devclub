@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import { motion, type Variants } from "framer-motion"
 import { Star, Quote } from "lucide-react"
+import { useVideoInView } from "@/hooks/use-video-in-view"
 
 type Testimonial = {
   quote: string
@@ -72,12 +73,7 @@ function StarRating({ delay = 0 }: { delay?: number }) {
 
 export function TestimonialsSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.muted = true
-    v.play().catch((err) => console.log("autoplay bloqueado:", err))
-  }, [])
+  useVideoInView(videoRef)
 
   return (
     <section id="depoimentos" className="relative overflow-hidden bg-[#08090C] py-24 sm:py-32">

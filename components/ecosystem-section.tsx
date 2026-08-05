@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion, type Variants } from "framer-motion";
 import { Video, BrainCircuit, Sparkles } from "lucide-react";
+import { useVideoInView } from "@/hooks/use-video-in-view";
 
 const container: Variants = {
   hidden: {},
@@ -141,12 +142,7 @@ export function EcosystemSection() {
 /* Abstract "study platform" interface built entirely from divs */
 function DashboardMockup() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.muted = true
-    v.play().catch((err) => console.log("autoplay bloqueado:", err))
-  }, [])
+  useVideoInView(videoRef)
 
   return (
     <div className="mt-8 flex flex-1 flex-col justify-between rounded-xl border border-white/[0.06] bg-[#0a0b0f] p-4">
