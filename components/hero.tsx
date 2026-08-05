@@ -17,15 +17,15 @@ type Token = { text: string; className?: string };
 const codeLines: Token[][] = [
   [
     { text: "const" },
-    { text: " dev = " },
-    { text: '"você"', className: "text-brand" },
+    { text: " carreira = " },
+    { text: '"programação"', className: "text-brand" },
     { text: ";" },
   ],
-  [{ text: "function" }, { text: " construir(ideia) {" }],
-  [{ text: "  return" }, { text: " codigo + café;" }],
+  [{ text: "function" }, { text: " evoluir() {" }],
+  [{ text: "  return" }, { text: " liberdade_financeira;" }],
   [{ text: "}" }],
-  [{ text: "// entregar antes do prazo", className: "text-muted-foreground" }],
-  [{ text: "deploy" }, { text: "(dev);" }],
+  [{ text: "// desenvolvendo projetos que transformam", className: "text-muted-foreground" }],
+  [{ text: "deploy" }, { text: "(seu_futuro);" }],
 ];
 
 // ---- teclado: números, letras e símbolos reais, 3 fileiras ----
