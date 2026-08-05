@@ -641,14 +641,24 @@ export function Hero({
       <div className="relative z-20 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 xl:grid-cols-2 xl:gap-16">
         <div className="flex flex-col items-center gap-6 text-center xl:items-start xl:text-left">
           {headlineActive && (
-            <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl xl:text-6xl">
+            <motion.h1
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="text-balance text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl xl:text-6xl"
+            >
               {headline.displayed}
               {!headline.done && <TypingCaret />}
-            </h1>
+            </motion.h1>
           )}
 
           {subtitleActive && (
-            <p className="text-pretty text-xl font-medium text-muted-foreground sm:text-2xl">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="text-pretty text-xl font-medium text-muted-foreground sm:text-2xl"
+            >
               {subtitle.done ? (
                 <>
                   Transforme sua carreira com{" "}
@@ -669,14 +679,19 @@ export function Hero({
                   <TypingCaret />
                 </>
               )}
-            </p>
+            </motion.p>
           )}
 
           {descriptionActive && (
-            <p className="max-w-lg text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-lg text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg"
+            >
               {description.displayed}
               {!description.done && <TypingCaret />}
-            </p>
+            </motion.p>
           )}
 
           {(stage === "cta" || stage === "done") && (
