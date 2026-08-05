@@ -642,9 +642,9 @@ export function Hero({
         <div className="flex flex-col items-center gap-6 text-center xl:items-start xl:text-left">
           {headlineActive && (
             <motion.h1
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
               className="text-balance text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl xl:text-6xl"
             >
               {headline.displayed}

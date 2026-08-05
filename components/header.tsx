@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion, useMotionTemplate, useScroll, useTransform } from "framer-motion"
-import { Menu, X, Terminal } from "lucide-react"
+import { Menu, X } from "lucide-react"
+import Image from "next/image"
 
 const NAV_ITEMS = [
   { id: "sobre", label: "Sobre" },
@@ -15,13 +16,18 @@ const NAV_ITEMS = [
 function Wordmark() {
   return (
     <a
-      href="#topo"
-      className="group flex items-center gap-2 text-lg font-semibold tracking-tight"
+        href="#topo"
+      className="flex items-center gap-2 text-lg font-semibold tracking-tight"
       aria-label="DevClub — página inicial"
     >
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand/15 ring-1 ring-brand/30 transition-colors group-hover:bg-brand/25">
-        <Terminal className="h-4 w-4 text-brand" aria-hidden="true" />
-      </span>
+      <Image
+        src="/images/logo.png"
+        alt="DevClub"
+        width={32}
+        height={32}
+        className="h-8 w-8 rounded-lg"
+        priority
+      />
       <span className="text-foreground">
         Dev<span className="text-brand">Club</span>
       </span>
