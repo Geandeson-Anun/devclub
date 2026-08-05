@@ -2,10 +2,19 @@
 
 import { useEffect, type RefObject } from "react"
 
-export function useVideoInView(videoRef: RefObject<HTMLVideoElement | null>) {
+export function useVideoInView(
+  videoRef: RefObject<HTMLVideoElement | null>,
+  enabled = true,
+) {
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+
+    // Keep a disabled video fully paused until its parent explicitly enables it.
+    if (!enabled) {
+      video.pause()
+      return
+    }
 
     let isInView = false
 

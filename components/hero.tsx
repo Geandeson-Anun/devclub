@@ -1,201 +1,260 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { motion, useMotionValue, useSpring, useTransform, type Transition } from "framer-motion"
-import { Star } from "lucide-react"
-import { useVideoInView } from "@/hooks/use-video-in-view"
+import type React from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type Transition,
+} from "framer-motion";
+import { Star } from "lucide-react";
+import { useVideoInView } from "@/hooks/use-video-in-view";
 
 // ---- código digitado, token a token (cor por tipo) ----
-type Token = { text: string; className?: string }
+type Token = { text: string; className?: string };
 const codeLines: Token[][] = [
   [
-    { text: "const" }, { text: " dev = " }, { text: '"você"', className: "text-brand" }, { text: ";" },
+    { text: "const" },
+    { text: " dev = " },
+    { text: '"você"', className: "text-brand" },
+    { text: ";" },
   ],
-  [
-    { text: "function" }, { text: " construir(ideia) {" },
-  ],
-  [
-    { text: "  return" }, { text: " codigo + café;" },
-  ],
+  [{ text: "function" }, { text: " construir(ideia) {" }],
+  [{ text: "  return" }, { text: " codigo + café;" }],
   [{ text: "}" }],
   [{ text: "// entregar antes do prazo", className: "text-muted-foreground" }],
   [{ text: "deploy" }, { text: "(dev);" }],
-]
+];
 
 // ---- teclado: números, letras e símbolos reais, 3 fileiras ----
 const keyRows = [
   ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "\\"],
-]
+];
 
 // ---- logo do DevClub em grid de blocos 7x7 ----
-const LOGO_SIZE = 7
+const LOGO_SIZE = 7;
 const logoFilled = new Set([
-  "1-1", "1-2", "1-3", "1-6", "1-7",
-  "2-1", "2-3", "2-5", "2-7",
-  "3-1", "3-2", "3-3", "3-5", "3-6", "3-7",
+  "1-1",
+  "1-2",
+  "1-3",
+  "1-6",
+  "1-7",
+  "2-1",
+  "2-3",
+  "2-5",
+  "2-7",
+  "3-1",
+  "3-2",
+  "3-3",
+  "3-5",
+  "3-6",
+  "3-7",
   "4-4",
-  "5-1", "5-2", "5-3", "5-5", "5-6", "5-7",
-  "6-1", "6-3", "6-5", "6-7",
-  "7-1", "7-2", "7-3", "7-6", "7-7",
-])
+  "5-1",
+  "5-2",
+  "5-3",
+  "5-5",
+  "5-6",
+  "5-7",
+  "6-1",
+  "6-3",
+  "6-5",
+  "6-7",
+  "7-1",
+  "7-2",
+  "7-3",
+  "7-6",
+  "7-7",
+]);
 const logoCells = Array.from({ length: LOGO_SIZE * LOGO_SIZE }, (_, i) => {
-  const r = Math.floor(i / LOGO_SIZE) + 1
-  const c = (i % LOGO_SIZE) + 1
-  return logoFilled.has(`${r}-${c}`)
-})
+  const r = Math.floor(i / LOGO_SIZE) + 1;
+  const c = (i % LOGO_SIZE) + 1;
+  return logoFilled.has(`${r}-${c}`);
+});
 
 function useTypewriter(active: boolean) {
-  const [lineIndex, setLineIndex] = useState(0)
-  const [charCount, setCharCount] = useState(0)
-  const [lineDone, setLineDone] = useState(false)
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+  const [lineDone, setLineDone] = useState(false);
 
   useEffect(() => {
-    if (!active) return
-    let mounted = true
+    if (!active) return;
+    let mounted = true;
     async function run() {
       while (mounted) {
         for (let li = 0; li < codeLines.length; li++) {
-          const flat = codeLines[li].map((t) => t.text).join("")
+          const flat = codeLines[li].map((t) => t.text).join("");
           for (let cc = 0; cc <= flat.length; cc++) {
-            if (!mounted) return
-            setLineIndex(li)
-            setCharCount(cc)
-            setLineDone(false)
-            await new Promise((r) => setTimeout(r, 14))
+            if (!mounted) return;
+            setLineIndex(li);
+            setCharCount(cc);
+            setLineDone(false);
+            await new Promise((r) => setTimeout(r, 14));
           }
-          setLineDone(true)
-          await new Promise((r) => setTimeout(r, 160))
+          setLineDone(true);
+          await new Promise((r) => setTimeout(r, 160));
         }
-        await new Promise((r) => setTimeout(r, 900))
-        if (!mounted) return
-        setLineIndex(0)
-        setCharCount(0)
-        setLineDone(false)
+        await new Promise((r) => setTimeout(r, 900));
+        if (!mounted) return;
+        setLineIndex(0);
+        setCharCount(0);
+        setLineDone(false);
       }
     }
-    run()
+    run();
     return () => {
-      mounted = false
-    }
-  }, [active])
+      mounted = false;
+    };
+  }, [active]);
 
-  return { lineIndex, charCount, lineDone }
+  return { lineIndex, charCount, lineDone };
 }
 
 // Revela um texto progressivamente, caractere por caractere, uma única vez
 // (não é um loop) — usado para o efeito de "sendo escrito" da headline,
 // subtítulo e descrição do Hero.
 function useTypedReveal(text: string, active: boolean, speed = 32) {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!active || !text) return
+    if (!active || !text) return;
     const id = setInterval(() => {
       setCount((c) => {
         if (c >= text.length) {
-          clearInterval(id)
-          return c
+          clearInterval(id);
+          return c;
         }
-        return c + 1
-      })
-    }, speed)
-    return () => clearInterval(id)
-  }, [active, text, speed])
+        return c + 1;
+      });
+    }, speed);
+    return () => clearInterval(id);
+  }, [active, text, speed]);
 
-  return { displayed: text.slice(0, count), done: count >= text.length }
+  return { displayed: text.slice(0, count), done: count >= text.length };
 }
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     // Deve acompanhar o breakpoint em que o grid do Hero vira 2 colunas
     // (xl, 1280px) — abaixo disso o layout é empilhado/centralizado
     // (inclui tablets como iPad, que não têm espaço para 2 colunas).
-    const mq = window.matchMedia("(max-width: 1279px)")
-    setIsMobile(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
-    mq.addEventListener("change", handler)
-    return () => mq.removeEventListener("change", handler)
-  }, [])
-  return isMobile
+    const mq = window.matchMedia("(max-width: 1279px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isMobile;
 }
 
-type Phase = "closed" | "opening" | "open" | "shrinking" | "positioned" | "orbiting"
+type Phase =
+  | "closed"
+  | "opening"
+  | "open"
+  | "shrinking"
+  | "positioned"
+  | "orbiting";
 
-type Offset = { x: number; y: number }
+type Offset = { x: number; y: number };
+
+// Só uma amostra das teclas anima (performance) — as demais ficam com
+// opacidade fixa, mantendo a cor e o glow sem o custo do loop infinito.
+const animatedKeys = new Set([
+  "0-1",
+  "0-4",
+  "0-8",
+  "0-11",
+  "1-2",
+  "1-6",
+  "1-9",
+  "2-0",
+  "2-5",
+  "2-10",
+]);
 
 function NotebookMockup({
   entryOffset = { x: 0, y: 0 },
   onSettled,
 }: {
-  entryOffset?: Offset
-  onSettled?: () => void
+  entryOffset?: Offset;
+  onSettled?: () => void;
 }) {
-  const [phase, setPhase] = useState<Phase>("closed")
-  const [hovered, setHovered] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
+  const [phase, setPhase] = useState<Phase>("closed");
+  const [hovered, setHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
-  const typingActive = phase !== "closed" && phase !== "opening"
-  const { lineIndex, charCount, lineDone } = useTypewriter(typingActive)
+  const typingActive = phase !== "closed" && phase !== "opening";
+  const { lineIndex, charCount, lineDone } = useTypewriter(typingActive);
 
-  const py = useMotionValue(0)
-  const rotateXHover = useSpring(useTransform(py, [-0.5, 0.5], [6, -6]), { stiffness: 150, damping: 18 })
+  const py = useMotionValue(0);
+  const rotateXHover = useSpring(useTransform(py, [-0.5, 0.5], [6, -6]), {
+    stiffness: 150,
+    damping: 18,
+  });
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = cardRef.current?.getBoundingClientRect()
-    if (!rect) return
-    py.set((e.clientY - rect.top) / rect.height - 0.5)
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    py.set((e.clientY - rect.top) / rect.height - 0.5);
   }
   function handleMouseLeave() {
-    setHovered(false)
-    py.set(0)
+    setHovered(false);
+    py.set(0);
   }
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase("opening"), 500)
-    return () => clearTimeout(t)
-  }, [])
+    const t = setTimeout(() => setPhase("opening"), 500);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
-    if (phase !== "open") return
-    const t = setTimeout(() => setPhase("shrinking"), 2200)
-    return () => clearTimeout(t)
-  }, [phase])
+    if (phase !== "open") return;
+    const t = setTimeout(() => setPhase("shrinking"), 2200);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   useEffect(() => {
-    if (phase !== "positioned") return
-    const t = setTimeout(() => setPhase("orbiting"), 400)
-    return () => clearTimeout(t)
-  }, [phase])
+    if (phase !== "positioned") return;
+    const t = setTimeout(() => setPhase("orbiting"), 400);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   // Fases em que o notebook deve aparecer grande, centralizado na tela,
   // cobrindo o título/headline/CTA — igual ao protótipo original.
-  const isCovering = phase === "closed" || phase === "opening" || phase === "open"
+  const isCovering =
+    phase === "closed" || phase === "opening" || phase === "open";
 
-  const entranceScale = isCovering ? (isMobile ? 1.9 : 2.6) : 1
+  const entranceScale = isCovering ? (isMobile ? 1.9 : 2.6) : 1;
 
   // Desloca o notebook do seu lugar final (coluna da grid) até o centro da
   // seção enquanto está "cobrindo", equivalente ao translate(220px,10px) do
   // @keyframes sway original — só que calculado dinamicamente (responsivo)
   // em vez de um valor fixo, já que aqui o layout é lado a lado com o texto.
-  const entranceX = isCovering ? entryOffset.x : 0
-  const entranceY = isCovering ? entryOffset.y : 0
+  const entranceX = isCovering ? entryOffset.x : 0;
+  const entranceY = isCovering ? entryOffset.y : 0;
 
   // Replica exatamente o @keyframes sway original: 0% / 25% / 75% / 100%
   // (sem stop artificial em 50%, que quebrava a curva de easing do CSS).
   const swayAnimate =
     phase === "orbiting" && !hovered
       ? { rotateY: [0, 46, -46, 0] }
-      : { rotateY: 0 }
+      : { rotateY: 0 };
 
   const swayTransition: Transition =
     phase === "orbiting" && !hovered
-      ? { duration: 9, times: [0, 0.25, 0.75, 1], ease: "easeInOut", repeat: Infinity }
-      : { duration: 0.6, ease: "easeOut" }
+      ? {
+          duration: 9,
+          times: [0, 0.25, 0.75, 1],
+          ease: "easeInOut",
+          repeat: Infinity,
+        }
+      : { duration: 0.6, ease: "easeOut" };
 
   return (
     <div
@@ -214,8 +273,14 @@ function NotebookMockup({
         transition={{
           scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
           opacity: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-          x: { duration: phase === "shrinking" ? 2.4 : 1, ease: [0.16, 1, 0.3, 1] },
-          y: { duration: phase === "shrinking" ? 2.4 : 1, ease: [0.16, 1, 0.3, 1] },
+          x: {
+            duration: phase === "shrinking" ? 2.4 : 1,
+            ease: [0.16, 1, 0.3, 1],
+          },
+          y: {
+            duration: phase === "shrinking" ? 2.4 : 1,
+            ease: [0.16, 1, 0.3, 1],
+          },
         }}
         aria-hidden="true"
       >
@@ -229,22 +294,38 @@ function NotebookMockup({
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, scale: entranceScale, x: entranceX, y: entranceY }}
-        animate={{ opacity: 1, scale: entranceScale, x: entranceX, y: entranceY }}
-        transition={{ duration: phase === "shrinking" ? 2.4 : 1, ease: [0.16, 1, 0.3, 1] }}
+        initial={{
+          opacity: 0,
+          scale: entranceScale,
+          x: entranceX,
+          y: entranceY,
+        }}
+        animate={{
+          opacity: 1,
+          scale: entranceScale,
+          x: entranceX,
+          y: entranceY,
+        }}
+        transition={{
+          duration: phase === "shrinking" ? 2.4 : 1,
+          ease: [0.16, 1, 0.3, 1],
+        }}
         // ESSENCIAL: sem preserve-3d aqui, a perspective() do container pai
         // não chega até o rotateY do sway abaixo, e a rotação "achata" em vez
         // de girar com profundidade — era a causa da distorção.
         style={{ transformStyle: "preserve-3d" }}
         onAnimationComplete={() => {
           if (phase === "shrinking") {
-            setPhase("positioned")
-            onSettled?.()
+            setPhase("positioned");
+            onSettled?.();
           }
         }}
       >
         <motion.div
-          style={{ transformStyle: "preserve-3d", transformOrigin: "center center" }}
+          style={{
+            transformStyle: "preserve-3d",
+            transformOrigin: "center center",
+          }}
           animate={swayAnimate}
           transition={swayTransition}
         >
@@ -257,7 +338,12 @@ function NotebookMockup({
           >
             <div
               className="relative mx-auto"
-              style={{ width: 360, height: 230, transformStyle: "preserve-3d", transform: "rotateX(-24deg)" }}
+              style={{
+                width: 360,
+                height: 230,
+                transformStyle: "preserve-3d",
+                transform: "rotateX(-24deg)",
+              }}
             >
               <div
                 className="absolute rounded-b-2xl"
@@ -275,14 +361,23 @@ function NotebookMockup({
                 }}
               >
                 {keyRows.map((row, ri) => (
-                  <div key={ri} className="mb-[5px] grid grid-cols-12 gap-[5px]">
+                  <div
+                    key={ri}
+                    className="mb-[5px] grid grid-cols-12 gap-[5px]"
+                  >
                     {row.map((ch, ci) => (
                       <span
                         key={ci}
                         className="flex h-4 items-center justify-center rounded-[3px] border border-white/5 bg-white/[0.045] font-mono text-[8px] font-semibold text-brand"
                         style={{
-                          textShadow: "0 0 3px rgba(62,207,94,.9), 0 0 8px rgba(62,207,94,.55)",
-                          animation: `keyGlow 3.2s ease-in-out ${((ri * 12 + ci) * 0.09) % 2.4}s infinite`,
+                          textShadow:
+                            "0 0 3px rgba(62,207,94,.9), 0 0 8px rgba(62,207,94,.55)",
+                          opacity: animatedKeys.has(`${ri}-${ci}`)
+                            ? undefined
+                            : 0.85,
+                          animation: animatedKeys.has(`${ri}-${ci}`)
+                            ? `keyGlow 3.2s ease-in-out ${((ri * 12 + ci) * 0.09) % 2.4}s infinite`
+                            : "none",
                         }}
                       >
                         {ch}
@@ -302,7 +397,12 @@ function NotebookMockup({
                   }}
                 >
                   {logoCells.map((on, i) => (
-                    <span key={i} className={on ? "block rounded-[0.5px] bg-brand" : "block"} />
+                    <span
+                      key={i}
+                      className={
+                        on ? "block rounded-[0.5px] bg-brand" : "block"
+                      }
+                    />
                   ))}
                 </div>
               </div>
@@ -321,7 +421,7 @@ function NotebookMockup({
                 animate={{ rotateX: phase === "closed" ? 90 : 18 }}
                 transition={{ duration: 3.6, ease: [0.16, 1, 0.3, 1] }}
                 onAnimationComplete={() => {
-                  if (phase === "opening") setPhase("open")
+                  if (phase === "opening") setPhase("open");
                 }}
               >
                 <div
@@ -330,7 +430,8 @@ function NotebookMockup({
                     backfaceVisibility: "hidden",
                     background: "#050608",
                     border: "10px solid #111318",
-                    boxShadow: "0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(62,207,94,.08)",
+                    boxShadow:
+                      "0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(62,207,94,.08)",
                   }}
                 >
                   <div className="absolute inset-[2px] overflow-hidden rounded-[4px] bg-[#050608] p-3.5 font-mono text-[12.5px] leading-[1.55] text-brand">
@@ -350,7 +451,10 @@ function NotebookMockup({
                               {tok.text}
                             </span>
                           ))
-                        : codeLines[lineIndex]?.map((t) => t.text).join("").slice(0, charCount)}
+                        : codeLines[lineIndex]
+                            ?.map((t) => t.text)
+                            .join("")
+                            .slice(0, charCount)}
                       <span className="ml-0.5 inline-block h-[13px] w-[6px] translate-y-[2px] animate-pulse bg-brand align-middle" />
                     </div>
                   </div>
@@ -372,18 +476,24 @@ function NotebookMockup({
 
       <style jsx>{`
         @keyframes keyGlow {
-          0%, 100% { opacity: .72; }
-          50% { opacity: 1; }
+          0%,
+          100% {
+            opacity: 0.72;
+          }
+          50% {
+            opacity: 1;
+          }
         }
       `}</style>
     </div>
-  )
+  );
 }
 
-const HEADLINE = "A Escola das Profissões do Futuro"
-const SUBTITLE_PLAIN = "Transforme sua carreira com [programação] do zero ao avançado"
+const HEADLINE = "A Escola das Profissões do Futuro";
+const SUBTITLE_PLAIN =
+  "Transforme sua carreira com [programação] do zero ao avançado";
 const DESCRIPTION =
-  "Aprenda as tecnologias mais demandadas do mercado com metodologia prática, direto ao ponto e de forma simples."
+  "Aprenda as tecnologias mais demandadas do mercado com metodologia prática, direto ao ponto e de forma simples.";
 
 // Um "|" piscando ao final do texto ainda em digitação.
 function TypingCaret({ className = "" }: { className?: string }) {
@@ -392,22 +502,34 @@ function TypingCaret({ className = "" }: { className?: string }) {
       className={`ml-1 inline-block h-[0.85em] w-[3px] translate-y-[0.1em] animate-pulse bg-brand align-middle ${className}`}
       aria-hidden="true"
     />
-  )
+  );
 }
 
 // Etapas da sequência de revelação: cada uma só começa depois que a
 // anterior termina — notebook assentado -> headline -> subtítulo ->
 // descrição -> CTA nascendo pequeno e crescendo -> avisa o Header.
-type RevealStage = "idle" | "headline" | "subtitle" | "description" | "cta" | "done"
+type RevealStage =
+  | "idle"
+  | "headline"
+  | "subtitle"
+  | "description"
+  | "cta"
+  | "done";
 
-export function Hero({ onSequenceComplete }: { onSequenceComplete?: () => void }) {
-  const sectionRef = useRef<HTMLElement>(null)
-  const slotRef = useRef<HTMLDivElement>(null)
-  const [entryOffset, setEntryOffset] = useState<Offset>({ x: 0, y: 0 })
-  const [stage, setStage] = useState<RevealStage>("idle")
+export function Hero({
+  onSequenceComplete,
+  videoEnabled = false,
+}: {
+  onSequenceComplete?: () => void;
+  videoEnabled?: boolean;
+}) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
+  const [entryOffset, setEntryOffset] = useState<Offset>({ x: 0, y: 0 });
+  const [stage, setStage] = useState<RevealStage>("idle");
 
-  const videoRef = useRef<HTMLVideoElement>(null)
-  useVideoInView(videoRef)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useVideoInView(videoRef, videoEnabled);
 
   // Mede, em tempo real, a distância entre o centro da seção (a "tela") e o
   // centro do lugar final do notebook (coluna da direita) para que ele possa
@@ -416,55 +538,63 @@ export function Hero({ onSequenceComplete }: { onSequenceComplete?: () => void }
   // protótipo original (que usava um translate fixo, aqui calculado).
   useLayoutEffect(() => {
     function measure() {
-      const sectionEl = sectionRef.current
-      const slotEl = slotRef.current
-      if (!sectionEl || !slotEl) return
-      const sectionRect = sectionEl.getBoundingClientRect()
-      const slotRect = slotEl.getBoundingClientRect()
-      const sectionCenterX = sectionRect.left + sectionRect.width / 2
-      const sectionCenterY = sectionRect.top + sectionRect.height / 2
-      const slotCenterX = slotRect.left + slotRect.width / 2
-      const slotCenterY = slotRect.top + slotRect.height / 2
-      setEntryOffset({ x: sectionCenterX - slotCenterX, y: sectionCenterY - slotCenterY })
+      const sectionEl = sectionRef.current;
+      const slotEl = slotRef.current;
+      if (!sectionEl || !slotEl) return;
+      const sectionRect = sectionEl.getBoundingClientRect();
+      const slotRect = slotEl.getBoundingClientRect();
+      const sectionCenterX = sectionRect.left + sectionRect.width / 2;
+      const sectionCenterY = sectionRect.top + sectionRect.height / 2;
+      const slotCenterX = slotRect.left + slotRect.width / 2;
+      const slotCenterY = slotRect.top + slotRect.height / 2;
+      setEntryOffset({
+        x: sectionCenterX - slotCenterX,
+        y: sectionCenterY - slotCenterY,
+      });
     }
-    measure()
-    window.addEventListener("resize", measure)
-    return () => window.removeEventListener("resize", measure)
-  }, [])
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   // O notebook avisa (via onSettled) quando termina de encolher e assentar
   // no seu lugar — só então a headline começa a ser "escrita".
   const handleNotebookSettled = () => {
-    setStage((s) => (s === "idle" ? "headline" : s))
-  }
+    setStage((s) => (s === "idle" ? "headline" : s));
+  };
 
-  const headlineActive = stage !== "idle"
-  const subtitleActive = stage === "subtitle" || stage === "description" || stage === "cta" || stage === "done"
-  const descriptionActive = stage === "description" || stage === "cta" || stage === "done"
+  const headlineActive = stage !== "idle";
+  const subtitleActive =
+    stage === "subtitle" ||
+    stage === "description" ||
+    stage === "cta" ||
+    stage === "done";
+  const descriptionActive =
+    stage === "description" || stage === "cta" || stage === "done";
 
-  const headline = useTypedReveal(HEADLINE, headlineActive, 45)
-  const subtitle = useTypedReveal(SUBTITLE_PLAIN, subtitleActive, 30)
-  const description = useTypedReveal(DESCRIPTION, descriptionActive, 16)
+  const headline = useTypedReveal(HEADLINE, headlineActive, 45);
+  const subtitle = useTypedReveal(SUBTITLE_PLAIN, subtitleActive, 30);
+  const description = useTypedReveal(DESCRIPTION, descriptionActive, 16);
 
   // Cada bloco de texto, ao terminar de ser digitado, dá uma pequena pausa
   // e libera o próximo — leve e sem pressa, como pedido.
   useEffect(() => {
-    if (stage !== "headline" || !headline.done) return
-    const t = setTimeout(() => setStage("subtitle"), 350)
-    return () => clearTimeout(t)
-  }, [stage, headline.done])
+    if (stage !== "headline" || !headline.done) return;
+    const t = setTimeout(() => setStage("subtitle"), 350);
+    return () => clearTimeout(t);
+  }, [stage, headline.done]);
 
   useEffect(() => {
-    if (stage !== "subtitle" || !subtitle.done) return
-    const t = setTimeout(() => setStage("description"), 350)
-    return () => clearTimeout(t)
-  }, [stage, subtitle.done])
+    if (stage !== "subtitle" || !subtitle.done) return;
+    const t = setTimeout(() => setStage("description"), 350);
+    return () => clearTimeout(t);
+  }, [stage, subtitle.done]);
 
   useEffect(() => {
-    if (stage !== "description" || !description.done) return
-    const t = setTimeout(() => setStage("cta"), 350)
-    return () => clearTimeout(t)
-  }, [stage, description.done])
+    if (stage !== "description" || !description.done) return;
+    const t = setTimeout(() => setStage("cta"), 350);
+    return () => clearTimeout(t);
+  }, [stage, description.done]);
 
   return (
     <section
@@ -472,32 +602,39 @@ export function Hero({ onSequenceComplete }: { onSequenceComplete?: () => void }
       id="topo"
       className="relative flex min-h-[100svh] items-center overflow-hidden px-6 pt-24 pb-16"
     >
-    {/* Background video — loads immediately */}
+      {/* Background video — starts after the Hero and Header entrance sequence */}
       <video
-  ref={videoRef}
-  className="absolute inset-0 z-0 h-full w-full object-cover"
-  style={{ filter: "brightness(0.6) saturate(0.9)" }}
-  autoPlay
-  loop
-  muted
-  playsInline
-  preload="auto"
-  aria-hidden="true"
->
-  <source src="/videos/v-two.mp4" type="video/mp4" />
-</video>
+        ref={videoRef}
+        className={`absolute inset-0 z-0 h-full w-full object-cover transition-opacity duration-1000 ${
+          videoEnabled ? "opacity-100" : "opacity-0"
+        }`}
+        style={{ filter: "brightness(0.6) saturate(0.9)" }}
+        loop
+        muted
+        playsInline
+        preload={videoEnabled ? "auto" : "none"}
+        aria-hidden="true"
+      >
+        <source src="/videos/v-two.mp4" type="video/mp4" />
+      </video>
 
       {/* Overlay for text legibility over the video */}
       <div className="absolute inset-0 z-10 bg-black/40" aria-hidden="true" />
 
       <div
         className="pointer-events-none absolute -left-20 top-24 h-[440px] w-[560px] rounded-full opacity-40 blur-[130px] z-10"
-        style={{ background: "radial-gradient(circle, rgba(62,207,94,0.30), transparent 70%)" }}
+        style={{
+          background:
+            "radial-gradient(circle, rgba(62,207,94,0.30), transparent 70%)",
+        }}
         aria-hidden="true"
       />
       <div
         className="pointer-events-none absolute right-0 top-40 h-80 w-80 rounded-full opacity-30 blur-[130px]"
-        style={{ background: "radial-gradient(circle, rgba(139,92,246,0.40), transparent 70%)" }}
+        style={{
+          background:
+            "radial-gradient(circle, rgba(139,92,246,0.40), transparent 70%)",
+        }}
         aria-hidden="true"
       />
 
@@ -549,8 +686,8 @@ export function Hero({ onSequenceComplete }: { onSequenceComplete?: () => void }
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               onAnimationComplete={() => {
                 if (stage === "cta") {
-                  setStage("done")
-                  onSequenceComplete?.()
+                  setStage("done");
+                  onSequenceComplete?.();
                 }
               }}
               className="mt-2 flex origin-center flex-col items-center gap-3 sm:flex-row xl:origin-left xl:items-start"
@@ -590,9 +727,12 @@ export function Hero({ onSequenceComplete }: { onSequenceComplete?: () => void }
         </div>
 
         <div ref={slotRef}>
-          <NotebookMockup entryOffset={entryOffset} onSettled={handleNotebookSettled} />
+          <NotebookMockup
+            entryOffset={entryOffset}
+            onSettled={handleNotebookSettled}
+          />
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -59,7 +59,13 @@ function NavLink({
   )
 }
 
-export function Header({ revealed }: { revealed: boolean }) {
+export function Header({
+  revealed,
+  onRevealComplete,
+}: {
+  revealed: boolean
+  onRevealComplete?: () => void
+}) {
   const [activeSection, setActiveSection] = useState<string>("")
   const [menuOpen, setMenuOpen] = useState(false)
   const [flash, setFlash] = useState(false)
@@ -138,7 +144,10 @@ export function Header({ revealed }: { revealed: boolean }) {
               initial={{ x: "-120%", opacity: 0 }}
               animate={{ x: "260%", opacity: [0, 1, 1, 0] }}
               transition={{ duration: 0.9, ease: "easeInOut" }}
-              onAnimationComplete={() => setFlash(false)}
+              onAnimationComplete={() => {
+                setFlash(false)
+                onRevealComplete?.()
+              }}
               aria-hidden="true"
             />
           )}

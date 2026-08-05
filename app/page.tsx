@@ -19,13 +19,17 @@ export default function Home() {
   // O Header só desce para seu lugar depois que toda a sequência de entrada
   // do Hero (notebook + headline + textos + CTA) termina.
   const [headerRevealed, setHeaderRevealed] = useState(false)
+  const [heroVideoEnabled, setHeroVideoEnabled] = useState(false)
 
   return (
     <div className="min-h-screen bg-background">
-      <Header revealed={headerRevealed} />
+      <Header revealed={headerRevealed} onRevealComplete={() => setHeroVideoEnabled(true)} />
 
       <main>
-        <Hero onSequenceComplete={() => setHeaderRevealed(true)} />
+        <Hero
+          onSequenceComplete={() => setHeaderRevealed(true)}
+          videoEnabled={heroVideoEnabled}
+        />
 
         <CompanyMarquee />
 
