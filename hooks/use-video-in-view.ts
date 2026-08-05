@@ -52,5 +52,5 @@ export function useVideoInView(
       document.removeEventListener("visibilitychange", syncPlayback)
       video.pause()
     }
-  }, [videoRef])
+  }, [videoRef, enabled])
 }
